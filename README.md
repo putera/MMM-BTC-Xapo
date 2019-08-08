@@ -13,13 +13,13 @@ To use this module, add it to the modules array in the `config/config.js` file:
 
 ```javascript
 modules: [
-	{
-		module: 'MMM-BTC-Xapo',
+    {
+        module: 'MMM-BTC-Xapo',
         position: 'top_right',
         config: {
             // See 'Configuration options' for more information.
             currency: 'MYR',
-            refreshTime: 1,		// update interval price in minutes
+            refreshTime: 1,     // update interval price in minutes
             language: 'ms-my'
         }
     }
