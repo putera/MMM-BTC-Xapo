@@ -1,3 +1,13 @@
+/*
+
+    Xapo Bitcoin Price
+    ====================================
+
+    Developer : Zulkifli Mohamed
+    E-mail : mr.putera@gmail.com
+
+*/
+
 'use strict';
 
 Module.register("MMM-BTC-Xapo",
@@ -44,27 +54,31 @@ Module.register("MMM-BTC-Xapo",
     getDom: function() {
         var wrapper = document.createElement("xapo-price");
         wrapper.className = 'medium bright';
+        wrapper.className = 'xapo-price';
 
-        var data = this.result;
+        var data = JSON.parse(this.result);
         var currency = this.config.currency;      
-        var lastPriceBuy = data[0];
-        var lastPriceSell = data[1];
+        var lastPriceBuy = data.buy;
+        var lastPriceSell = data.sell;
 
         if (data)
         {
-            var priceElement = document.createElement("span");
-            priceElement.innerHTML = self.translate("SELL") + ' : ' + currency + ' ' + lastPriceSell + ' &nbsp; ' + self.translate("BUY") + ' : ' + currency + ' ' + lastPriceBuy;
-            wrapper.appendChild(priceElement);
+            var pe = document.createElement("span");
+            pe.innerHTML = self.translate("SELL") + ' : ' + currency + ' ' + lastPriceSell + ' &nbsp; ' + self.translate("BUY") + ' : ' + currency + ' ' + lastPriceBuy;
+            wrapper.appendChild(pe);
         }
         else
         {
-            wrapper.appendChild(self.translate("ERROR_DATA_LOAD"));
+            var el = document.createElement("span");
+            el.className = 'small dimmed';
+            el.innerHTML = self.translate("ERROR_DATA_LOAD");
+            wrapper.appendChild(el);
         }
         return wrapper;
     },
 
     socketNotificationReceived: function(notification, payload) {
-        if (notification === "PRICE") {
+        if (notification === "PRICE_RESULT") {
             var self = this;
             this.result = payload;
             this.updateDom(self.config.fadeSpeed);

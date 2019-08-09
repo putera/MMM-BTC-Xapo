@@ -9,20 +9,20 @@ module.exports = NodeHelper.create(
 
     getPrice: function(currency) {
         var self = this;
-        var price = [];
+        var price = {}; var priceBuy = 0.00; var priceSell = 0.00;
         currency = currency.toUpperCase();
+        var cBTC = currency + 'BTC';
+        var BTCc = 'BTC' + currency;
 
-        var urlBuy = 'https://api.xapo.com/v3/quotes/' + currency + 'BTC';
-        var urlSell = 'https://api.xapo.com/v3/quotes/BTC' + currency;
+        var urlBuy = 'https://api.xapo.com/v3/quotes/' + cBTC;
+        var urlSell = 'https://api.xapo.com/v3/quotes/' + BTCc;
 
         // Buy Price
         request({ url: urlBuy, method: 'GET' }, function(error, response, body)
         {
             if (!error && response.statusCode == 200) {
                 var result = JSON.parse(body);
-                price.push(result.fx_etoe[0].source_amt.toFixed(2));
-            } else {
-                price.push("0.00");
+                price.buy = result.fx_etoe[cBTC].source_amt.toFixed(2);
             }
         });
 
@@ -31,13 +31,11 @@ module.exports = NodeHelper.create(
         {
             if (!error && response.statusCode == 200) {
                 var result = JSON.parse(body);
-                price.push(result.fx_etoe[0].rate.toFixed(2));
-            } else {
-                price.push("0.00");
+                price.sell = result.fx_etoe[BTCc].rate.toFixed(2);
             }
         });
 
-        self.sendSocketNotification('PRICE', price);
+        self.sendSocketNotification('PRICE_RESULT', JSON.stringify(price));
     },
 
     socketNotificationReceived: function(notification, payload)

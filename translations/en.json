@@ -1,5 +1,5 @@
 {
-	"ERROR_DATA_LOAD" : "Error loading BTC price",
+	"ERROR_DATA_LOAD" : "BTC price not available at the moment",
 	"BUY" : "Buy",
 	"SELL" : "Sell"
 }
