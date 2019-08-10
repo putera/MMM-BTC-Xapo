@@ -15,11 +15,11 @@ To use this module, add it to the modules array in the `config/config.js` file:
 modules: [
     {
         module: 'MMM-BTC-Xapo',
-        position: 'top_right',
+        position: 'top_left',
         config: {
             // See 'Configuration options' for more information.
             currency: 'MYR',
-            refreshTime: 1,     // update interval price in minutes
+            refreshTime: 5,     // update interval price in minutes
             language: 'ms-my'
         }
     }
@@ -34,3 +34,4 @@ The following properties can be configured:
 | `currency` | Your currency exchange code |
 | `refreshTime` | Refresh interval time to get the price from Xapo |
 | `language` | Language you are using |
+| `animationSpeed` | Fade animation in miliseconds |

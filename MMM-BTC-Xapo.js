@@ -3,7 +3,7 @@
     Xapo Bitcoin Price
     ====================================
 
-    Developer : Zulkifli Mohamed
+    Developer : Zulkifli Mohamed (putera)
     E-mail : mr.putera@gmail.com
 
 */
@@ -16,8 +16,9 @@ Module.register("MMM-BTC-Xapo",
     defaults:
     {
         currency: 'MYR',
-        refreshTime: 1,
-        language: "ms-my"
+        refreshTime: 5,
+        language: "ms-my",
+        animationSpeed: 2500
     },
 
     getStyles: function() {
@@ -26,7 +27,8 @@ Module.register("MMM-BTC-Xapo",
 
     getTranslations: function() {
         return {
-            "ms-my": "translations/ms-my.json"
+            "ms-my": "translations/ms-my.json",
+            "en": "translations/en.json"
         };
     },
 
@@ -52,36 +54,78 @@ Module.register("MMM-BTC-Xapo",
     },
 
     getDom: function() {
-        var wrapper = document.createElement("xapo-price");
-        wrapper.className = 'medium bright';
-        wrapper.className = 'xapo-price';
-
-        var data = JSON.parse(this.result);
-        var currency = this.config.currency;      
+        var data = this.result;
+        var currency = this.config.currency;
         var lastPriceBuy = data.buy;
         var lastPriceSell = data.sell;
 
+        var w = document.createElement("div");
+
         if (data)
         {
-            var pe = document.createElement("span");
-            pe.innerHTML = self.translate("SELL") + ' : ' + currency + ' ' + lastPriceSell + ' &nbsp; ' + self.translate("BUY") + ' : ' + currency + ' ' + lastPriceBuy;
-            wrapper.appendChild(pe);
+            if (typeof lastPriceBuy != "undefined") {
+                lastPriceBuy = currency + ' ' + lastPriceBuy.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            } else {
+                lastPriceBuy = '-';
+            }
+
+            if (typeof lastPriceSell != "undefined") {
+                lastPriceSell = currency + ' ' + lastPriceSell.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            } else {
+                lastPriceSell = '-';
+            }
+
+            // Title
+            var elt = document.createElement('div');
+            elt.className = 'normal dimmed';
+            elt.innerHTML = this.translate("XAPO_TITLE");
+
+            // Buy
+            var elbuy = document.createElement('div');
+            elbuy.style.width = '50%';
+            elbuy.style.float = 'left';
+            var elb = document.createElement('div');
+            elb.className = 'small dimmed';
+            elb.innerHTML = this.translate("BUY") + ':';
+            var elbp = document.createElement('div');
+            elbp.className = 'medium bright';
+            elbp.innerHTML = lastPriceBuy;
+            elbuy.appendChild(elb);
+            elbuy.appendChild(elbp);
+
+            // Sell
+            var elsell = document.createElement('div');
+            elsell.style.width = '50%';
+            elsell.style.float = 'right';
+            var els = document.createElement('div');
+            els.className = 'small dimmed buy-title';
+            els.innerHTML = this.translate("SELL") + ':';
+            var elsp = document.createElement('div');
+            elsp.className = 'medium bright';
+            elsp.innerHTML = lastPriceSell;
+            elsell.appendChild(els);
+            elsell.appendChild(elsp);
+
+            w.appendChild(elt);
+            w.appendChild(elbuy);
+            w.appendChild(elsell);
         }
         else
         {
-            var el = document.createElement("span");
+            var el = document.createElement("div");
             el.className = 'small dimmed';
-            el.innerHTML = self.translate("ERROR_DATA_LOAD");
-            wrapper.appendChild(el);
+            el.innerHTML = this.translate("ERROR_DATA_LOAD");
+            w.appendChild(el);
         }
-        return wrapper;
+
+        return w;
     },
 
     socketNotificationReceived: function(notification, payload) {
         if (notification === "PRICE_RESULT") {
             var self = this;
             this.result = payload;
-            this.updateDom(self.config.fadeSpeed);
+            this.updateDom(self.config.animationSpeed);
         }
     },
 });

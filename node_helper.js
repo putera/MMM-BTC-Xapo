@@ -1,5 +1,16 @@
+/*
+
+    Xapo Bitcoin Price
+    ====================================
+
+    Developer : Zulkifli Mohamed (putera)
+    E-mail : mr.putera@gmail.com
+
+*/
+
 var NodeHelper = require('node_helper');
 var request = require('request');
+var async = require('async');
 
 module.exports = NodeHelper.create(
 {
@@ -9,7 +20,7 @@ module.exports = NodeHelper.create(
 
     getPrice: function(currency) {
         var self = this;
-        var price = {}; var priceBuy = 0.00; var priceSell = 0.00;
+        var priceBuy = 0.00; var priceSell = 0.00;
         currency = currency.toUpperCase();
         var cBTC = currency + 'BTC';
         var BTCc = 'BTC' + currency;
@@ -17,25 +28,39 @@ module.exports = NodeHelper.create(
         var urlBuy = 'https://api.xapo.com/v3/quotes/' + cBTC;
         var urlSell = 'https://api.xapo.com/v3/quotes/' + BTCc;
 
-        // Buy Price
-        request({ url: urlBuy, method: 'GET' }, function(error, response, body)
-        {
-            if (!error && response.statusCode == 200) {
-                var result = JSON.parse(body);
-                price.buy = result.fx_etoe[cBTC].source_amt.toFixed(2);
+        async.parallel({
+            buy: function(callback) {
+                request({ url: urlBuy, method: 'GET' }, function(error, response, body) {
+                    if (!error && response.statusCode == 200) {
+                        callback(error, body);
+                    }
+                });
+            },
+            sell: function(callback) {
+                request({ url: urlSell, method: 'GET' }, function(error, response, body) {
+                    if (!error && response.statusCode == 200) {
+                        callback(error, body);
+                    }
+                });
             }
-        });
-
-        // Sell Price
-        request({ url: urlSell, method: 'GET' }, function(error, response, body)
-        {
-            if (!error && response.statusCode == 200) {
-                var result = JSON.parse(body);
-                price.sell = result.fx_etoe[BTCc].rate.toFixed(2);
+    	},
+        function(error, result) {
+            if (error) {
+                console.log('[MMM-BTC-XAPO] ' + error);
             }
-        });
 
-        self.sendSocketNotification('PRICE_RESULT', JSON.stringify(price));
+            var rBuy = JSON.parse(result.buy), rSell = JSON.parse(result.sell);
+
+            if (rBuy) {
+                priceBuy = rBuy.fx_etoe[cBTC].source_amt.toFixed(2);
+            }
+            if (rSell) {
+                priceSell = rSell.fx_etoe[BTCc].rate.toFixed(2);
+            }
+
+            var price = {buy: priceBuy, sell: priceSell};
+            self.sendSocketNotification('PRICE_RESULT', price);
+        });
     },
 
     socketNotificationReceived: function(notification, payload)

@@ -1,5 +1,6 @@
 {
-	"ERROR_DATA_LOAD" : "BTC price not available at the moment",
+	"XAPO_TITLE" : "Xapo : Bitcoin Price 1 BTC",
+	"ERROR_DATA_LOAD" : "- BTC price not available at the moment -",
 	"BUY" : "Buy",
 	"SELL" : "Sell"
 }
