@@ -61,7 +61,7 @@ Module.register("MMM-BTC-Xapo",
 
         var w = document.createElement("div");
 
-        if (data)
+        if (lastPriceBuy && lastPriceSell)
         {
             if (typeof lastPriceBuy != "undefined") {
                 lastPriceBuy = currency + ' ' + lastPriceBuy.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -114,7 +114,7 @@ Module.register("MMM-BTC-Xapo",
         {
             var el = document.createElement("div");
             el.className = 'small dimmed';
-            el.innerHTML = this.translate("ERROR_DATA_LOAD");
+            el.innerHTML = this.translate("LOADING");
             w.appendChild(el);
         }
 
